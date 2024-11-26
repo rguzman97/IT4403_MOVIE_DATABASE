@@ -1,0 +1,86 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* navbar section begin */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* logo positioning */
+.navbar img {
+    height: 100px; 
+    padding: 10px;
+}
+
+/* navbar search container */
+#search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+#search-button {
+    background-color: #224A6C;
+    color: white;
+    border: 1.5px solid black;
+    border-radius: 20px; /* Rounded corners */
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 20px;
+    width: 200px;
+}
+#search-button:hover {
+    background-color: darkred;
+}
+#search-input {
+    border: 1px solid #ccc;
+    border-radius: 5px; /* Rounded corners */
+    padding: 12px;
+    width: 400px;
+}
+/* navbar section end */
+
+/* carousel cards section */
+.carousel_wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+.carousel_container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+}
+
+.carousel-card {
+    margin: 10px;
+    height: 425px;
+    width: 300px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    background: rgb(58, 135, 243);
+    transition: 0.3s ease-in;
+}
+
+.carousel-card:hover {
+    transform: scale(1.075);
+    transition: 0.3s ease-in;
+    cursor: pointer;
+}
+
+
+.carousel-card h3, .carousel-card p {
+    margin: 5px 0;
+}

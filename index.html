@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IT 4403 Ryan Guzman</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="styleSheet.css">    
+</head>
+<body>
+    <!-- navbar section -->
+    <nav class="navbar">
+        <img src="logo-1.png" alt="logo" id="navbar_logo">
+        <ul class="navbar_menu">
+            <div id="search-container">
+                <input type="text" id="search-input" placeholder="Search For Any Movie/TV Show's Details...">
+                <button id="search-button">Search</button>
+            </div>                
+        </ul> 
+    </nav>
+
+    <section class="section">
+        <div class="carousel_wrapper">
+            <h1 id="carousel_id"><b>Popular Movies:</b></h1>
+            <div class="carousel_container" id="carousel-container"></div>
+        </div>
+    </section>
+
+
+    <div id="results-container"></div>
+
+    <div class="pagination" id="pagination"></div>
+
+    <div id="book-details-container"></div>
+
+    <script>
+        const carouselContainer = document.getElementById("carousel-container");
+
+        // Automatically fetch data on page load
+        getBookData();
+
+        // Fetch data using AJAX
+        function getBookData() {
+            const url = 'https://www.googleapis.com/books/v1/users/104186410064639937582/bookshelves/1001/volumes';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    displayMovies(data.items);
+                } else {
+                    console.error('Error fetching books:', xhr.status);
+                }
+            };
+            xhr.send();
+        }
+
+        // Dynamically add movie details to the carousel
+        function displayMovies(movies) {
+            movies.forEach(movie => {
+                const card = document.createElement("div");
+                card.classList.add("carousel-card");
+                card.innerHTML = `
+                    <h3>${movie.volumeInfo.title}</h3>
+                    <p>Director: ${movie.volumeInfo.authers}</p>
+                `;
+                carouselContainer.appendChild(card);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            //variables to keep track of the current search query and result page
+            const pagination = document.getElementById('pagination');
+            const resultsContainer = document.getElementById('results-container');
+            const bookDetailsContainer = document.getElementById('book-details-container');
+            const toggleViewButton = document.getElementById('toggle-view-button')
+            const maxResults = 10;
+            const totalPages = 5;
+            let currentQuery = '';
+            let currentPage = 1;
+
+            // Function to handle the search button click
+            document.getElementById('search-button').addEventListener('click', function() {
+                currentQuery = document.getElementById('search-input').value.trim();
+                getBookData(currentQuery, currentPage);
+            });
+
+
+            //this displays search results
+            function displayResults(books) {
+                
+                resultsContainer.innerHTML = '';
+
+                // Iterate over the books and display their information
+                for (let i = 0; i < books.length; i++) {
+                    const book = books[i];
+                    const title = book.volumeInfo.title;
+                    const coverImage = book.volumeInfo.imageLinks.thumbnail;
+
+                    // Create a div to hold each book's information
+                    const bookDiv = document.createElement('div');
+                    bookDiv.className = 'book';
+
+                    const titleElement = document.createElement('h2');
+                    titleElement.textContent = title;
+                    const coverImageElement = document.createElement('img');
+                    coverImageElement.src = coverImage;
+
+                    bookDiv.appendChild(titleElement);
+                    bookDiv.appendChild(coverImageElement);
+                    resultsContainer.appendChild(bookDiv);
+
+                    // Add a click event listener to display book details when clicked
+                    bookDiv.addEventListener('click', function() {
+                        displayBookDetails(book);
+                    });
+                }
+            }
+
+            //this displays book details
+            function displayBookDetails(book) {
+
+                bookDetailsContainer.innerHTML = '';
+
+                //important information 
+                const title = book.volumeInfo.title;
+                const authors = book.volumeInfo.authors?.join(', ');
+                const description = book.volumeInfo.description;
+                const coverImage = book.volumeInfo.imageLinks.thumbnail;
+
+                // elements to display the book details
+                const titleElement = document.createElement('h2');
+                titleElement.textContent = title;
+                const authorsElement = document.createElement('p');
+                authorsElement.textContent = 'Author(s): ' + authors;
+                const descriptionElement = document.createElement('p');
+                descriptionElement.textContent = description;
+                const coverImageElement = document.createElement('img');
+                coverImageElement.src = coverImage;
+
+                bookDetailsContainer.appendChild(titleElement);
+                bookDetailsContainer.appendChild(authorsElement);
+                bookDetailsContainer.appendChild(descriptionElement);
+                bookDetailsContainer.appendChild(coverImageElement);
+            }
+
+            function renderPagination(currentPage) {
+                // Create array of pages for pagination (each page object has `page` and `isCurrent` properties)
+                const pages = Array.from({ length: totalPages }, (_, i) => ({
+                    page: i + 1,
+                    isCurrent: i + 1 === currentPage
+                }));
+
+                // Render pagination template
+                const template = document.getElementById('pagination-template').innerHTML;
+                const rendered = Mustache.render(template, { pages });
+                paginationContainer.innerHTML = rendered;
+
+                // Add click event listeners for pagination links
+                document.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        const page = parseInt(link.getAttribute('data-page'));
+                        getBookData(currentQuery, page);
+                    });
+                });
+            }
+
+            
+        });
+    </script>
+</body>
+</html>
